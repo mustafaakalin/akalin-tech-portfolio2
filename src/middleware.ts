@@ -1,12 +1,32 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { verify } from "jsonwebtoken";
+import type { NextRequest } from "next/server";
 
-export default clerkMiddleware();
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
+
+export async function middleware(request: NextRequest) {
+  const token = request.cookies.get("auth-token");
+
+  // Admin sayfalarını kontrol et
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    if (!token) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
+    try {
+      const decoded = verify(token.value, JWT_SECRET);
+      if (decoded.role !== "admin") {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return NextResponse.next();
+    } catch {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
+  return NextResponse.next();
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
+  matcher: ["/admin/:path*"]
 };

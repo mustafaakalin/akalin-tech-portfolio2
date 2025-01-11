@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { UserButton } from "@clerk/nextjs";
 
 const Sidebar = () => {
   return (
     <div className="w-64 bg-gray-900 text-white p-4">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-xl font-bold">Admin Panel</h1>
-        <UserButton afterSignOutUrl="/" />
       </div>
       
       <nav className="space-y-2">
