@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// Site ayarları modeli
+model SiteSettings {
+  id           Int      @id @default(autoincrement())
+  logo         String
+  name         String
+  slogan       String
+  workingHours Json     // { days: string, hours: string }
+  address      String
+  phone        String
+  socialLinks  Json     // { platform: url }
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Proje modeli
+model Project {
+  id            Int      @id @default(autoincrement())
+  title         String
+  slug          String   @unique
+  description   String   @db.Text
+  purpose       String
+  images        Json     // string[]
+  youtubeVideoId String?
+  technologies  Json     // { name: string, color: string }[]
+  developers    Json     // { name: string, position: string, imageUrl: string, socialLinks: Json }[]
+  socialLinks   Json     // { platform: url }
+  viewCount     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  isPublished   Boolean  @default(false)
+  emoji         String
+  demoUrl       String?
+  userUrls      Json?    // string[]
+}
+
+// İzinli kullanıcılar modeli
+model AllowedUser {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+} 
