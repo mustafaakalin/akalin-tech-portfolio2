@@ -1,8 +1,22 @@
 import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // Admin kullanıcısını ekle
+  const hashedPassword = await bcrypt.hash('admin123', 12);
+  await prisma.user.upsert({
+    where: { email: 'admin@akalintech.com' },
+    update: {},
+    create: {
+      email: 'admin@akalintech.com',
+      name: 'Admin',
+      password: hashedPassword,
+      role: 'admin',
+    },
+  });
+
   // İzinli kullanıcıları ekle
   await prisma.allowedUser.createMany({
     data: [
